@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./go.js"></script>
+    <script>
+        function init() {
+            var $ = go.GraphObject.make;
+            myDiagram = $(go.Diagram, "myDiagramDiv");
+
+            // 设置pin
+            function makePort(name, leftside, shape) {
+                var port = $(go.Shape, "circle",
+                    {
+                        fill: "gray", stroke: null,
+                        desiredSize: new go.Size(8, 8),
+                        portId: name,  // declare this object to be a "port"
+                        toMaxLinks: 1,  // don't allow more than one link into a port
+                        cursor: "pointer"  // show a different cursor to indicate potential link point
+                    }
+                )
+            }
+
+
+
+            //add element
+            function newElement(typename, icon, background, inports, outports) {
+                var node = $(go.Node, "Spot",
+                    $(go.Panel, "Auto",
+                        { width: 100, height: 120 },
+                        $(go.Shape, "Rectangle",
+                            {
+                                fill: background, stroke: null, strokeWidth: 0,
+                                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
+                            }),
+                        $(go.Panel, "Table",
+                            $(go.TextBlock, typename,
+                                {
+                                    row: 0,
+                                    margin: 3,
+                                    maxSize: new go.Size(80, NaN),
+                                    stroke: "white",
+                                    font: "bold 11pt sans-serif"
+                                }),
+                            $(go.Picture, icon,
+                                { row: 1, width: 55, height: 55 }),
+                            $(go.TextBlock,
+                                {
+                                    row: 2,
+                                    margin: 3,
+                                    editable: true,
+                                    maxSize: new go.Size(80, 40),
+                                    stroke: "white",
+                                    font: "bold 9pt sans-serif"
+                                },
+                                new go.Binding("text", "name").makeTwoWay())
+                        )
+                    ),
+                )
+
+                /* 
+                1. 
+                node = new default_node();
+                
+                2. 
+                set icons info
+
+                3. 
+                set ports info
+                */ 
+
+            }
+
+            // 设置连接线
+            function addLink() {
+
+            }
+
+            function load_map(json) {
+                //0. load data;
+
+                // 1. 
+                // call new element;
+
+                // 2.
+                // set links;
+            }
+
+
+        }
+
+
+    </script>
+
+</head>
+
+<body onload="init()">
+    <div id="myDiagramDiv"
+        style="border: 1px solid black; width: 100%; height: 800px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
+        <canvas tabindex="0" width="1037" height="598"
+            style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1037px; height: 598px;">
+        </canvas>
+    </div>
+</body>
+
+</html>

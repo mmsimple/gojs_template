@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <script src="./go.js"></script>
+
+    <div id="allSampleContent" class="p-4 w-full">
+        <script id="code">
+            function init() {
+                if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+                var $ = go.GraphObject.make;
+                myDiagram =
+                    $(go.Diagram, "myDiagramDiv",
+                        {
+                            initialContentAlignment: go.Spot.Left,
+                            initialAutoScale: go.Diagram.UniformToFill,
+                            layout: $(go.LayeredDigraphLayout,
+                                { direction: 0 }),
+                            "undoManager.isEnabled": true
+                        }
+                    );
+                // when the document is modified, add a "*" to the title and enable the "Save" button
+                myDiagram.addDiagramListener("Modified", function (e) {
+                    var button = document.getElementById("SaveButton");
+                    if (button) button.disabled = !myDiagram.isModified;
+                    var idx = document.title.indexOf("*");
+                    if (myDiagram.isModified) {
+                        if (idx < 0) document.title += "*";
+                    } else {
+                        if (idx >= 0) document.title = document.title.substr(0, idx);
+                    }
+                });
+                function makePort(name, leftside) {
+                    var port = $(go.Shape, "Rectangle",
+                        {
+                            fill: "gray", stroke: null,
+                            desiredSize: new go.Size(8, 8),
+                            portId: name,  // declare this object to be a "port"
+                            toMaxLinks: 1,  // don't allow more than one link into a port
+                            cursor: "pointer"  // show a different cursor to indicate potential link point
+                        });
+                    var lab = $(go.TextBlock, name,  // the name of the port
+                        { font: "7pt sans-serif" });
+                    var panel = $(go.Panel, "Horizontal",
+                        { margin: new go.Margin(2, 0) });
+                    // set up the port/panel based on which side of the node it will be on
+                    if (leftside) {
+                        port.toSpot = go.Spot.Left;
+                        port.toLinkable = true;
+                        lab.margin = new go.Margin(1, 0, 0, 1);
+                        panel.alignment = go.Spot.TopLeft;
+                        panel.add(port);
+                        panel.add(lab);
+                    } else {
+                        port.fromSpot = go.Spot.Right;
+                        port.fromLinkable = true;
+                        lab.margin = new go.Margin(1, 1, 0, 0);
+                        panel.alignment = go.Spot.TopRight;
+                        panel.add(lab);
+                        panel.add(port);
+                    }
+                    return panel;
+                }
+                // 设置模板
+                function makeTemplate(typename, icon, background, inports, outports) {
+                    var node = $(go.Node, "Spot",
+                        $(go.Panel, "Auto",
+                            { width: 100, height: 120 },
+                            $(go.Shape, "Rectangle",
+                                {
+                                    fill: background, stroke: null, strokeWidth: 0,
+                                    spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight                                }),
+                            $(go.Panel, "Table",
+                                $(go.TextBlock, typename,
+                                    {
+                                        row: 0,
+                                        margin: 3,
+                                        maxSize: new go.Size(80, NaN),
+                                        stroke: "white",
+                                        font: "bold 11pt sans-serif"
+                                    }),
+                                $(go.Picture, icon,
+                                    { row: 1, width: 55, height: 55 }),
+                                $(go.TextBlock,
+                                    {
+                                        row: 2,
+                                        margin: 3,
+                                        editable: true,
+                                        maxSize: new go.Size(80, 40),
+                                        stroke: "white",
+                                        font: "bold 9pt sans-serif"
+                                    },
+                                    new go.Binding("text", "name").makeTwoWay())
+                            )
+                        ),
+                        $(go.Panel, "Vertical",
+                            {
+                                alignment: go.Spot.Left,
+                                alignmentFocus: new go.Spot(0, 0.5, 8, 0)
+                            },
+                            inports),
+                        $(go.Panel, "Vertical",
+                            {
+                                alignment: go.Spot.Right,
+                                alignmentFocus: new go.Spot(1, 0.5, -8, 0)
+                            },
+                            outports),
+                    );
+                    myDiagram.nodeTemplateMap.set(typename, node);
+                }
+                makeTemplate("Edge_Coupler", "", "forestgreen",
+                    [makePort("port 1", true)],
+                    [makePort("port 2", false)]);
+                makeTemplate("PSR", "", "forestgreen",
+                    [makePort("port 1", true)],
+                    [makePort("port 2", false), makePort("port 3", false)]);
+                makeTemplate("Straight Waveguide", "", "forestgreen",
+                    [makePort("port 1", true)],
+                    [makePort("port 2", false)]);
+                makeTemplate("RMZI", "", "forestgreen",
+                    [makePort("port 1", true), makePort("port 2", true)],
+                    [makePort("port 3", false), makePort("port 4", false)]);
+                makeTemplate("Termination Mirror", "", "forestgreen",
+                    [],
+                    [makePort("port", false)]);
+                makeTemplate("Optical Mirror", "", "forestgreen",
+                    [makePort("port 1", true)],
+                    [makePort("port 2", false)]);
+                // makeTemplate("Optical Network Analyzer", "", "forestgreen",
+                //     [makePort("")])
+
+                myDiagram.linkTemplate =
+                    $(go.Link,
+                        {
+                            routing: go.Link.Orthogonal, corner: 5,
+                            relinkableFrom: true, relinkableTo: true
+                        },
+                        $(go.Shape, { stroke: "gray", strokeWidth: 2 }),
+                        // $(go.Shape, { stroke: "gray", fill: "gray", toArrow: "Standard" })
+                    );
+                load();
+            }
+            // Show the diagram's model in JSON format that the user may edit
+            function save() {
+                document.getElementById("mySavedModel").value = myDiagram.model.toJson();
+                myDiagram.isModified = false;
+            }
+            function load() {
+
+                console.log("mySavedModel", document.getElementById("mySavedModel").value)
+
+                myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
+            }
+            window.addEventListener('DOMContentLoaded', init);
+        </script>
+
+        <div id="sample">
+            <div id="myDiagramDiv"
+                style="border: 1px solid black; width: 100%; height: 800px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
+                <canvas tabindex="0" width="1037" height="598"
+                    style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1037px; height: 598px;">
+                </canvas>
+            </div>
+            <div>
+                <textarea id="mySavedModel" style="width:100%;height:300px;visibility:hidden">
+                    { "class": "go.GraphLinksModel",
+                        "nodeCategoryProperty": "type",
+                        "linkFromPortIdProperty": "frompid",
+                        "linkToPortIdProperty": "topid",
+                        "nodeDataArray": [
+                            {"key": 1, "type": "Edge_Coupler", "name": "Edge_Coupler"},
+                            {"key": 3, "type": "PSR", "name": "PSR"},
+                            {"key": 6, "type": "Straight Waveguide", "name": "WGD_routing_1"},
+                            {"key": 8, "type": "Straight Waveguide", "name": "WGD_routing_2"},
+                            {"key": 10, "type": "RMZI", "name": "RMZI_1"},
+                            {"key": 14, "type": "Termination Mirror", "name": "TERM_2"},
+                            {"key": 15, "type": "Straight Waveguide", "name": "WGD_routing_3"},
+                            {"key": 17, "type": "Straight Waveguide", "name": "WGD_routing_4"},
+                            {"key": 19, "type": "Optical Mirror", "name": "MIRR_1"},
+                            {"key": 21, "type": "Optical Mirror", "name": "MIRR_2"},
+                            {"key": 23, "type": "RMZI", "name": "RMZI_2"},
+                            {"key": 27, "type": "Termination Mirror", "name": "TERM_1"},
+                            {"key": 28, "type": "Straight Waveguide", "name": "WGD_routing_1"},
+                            {"key": 30, "type": "Straight Waveguide", "name": "WGD_routing_2"},
+                            {"key": 32, "type": "Optical Mirror", "name": "MIRR_3"},
+                            {"key": 34, "type": "Optical Mirror", "name": "MIRR_4"}
+
+                        ],
+                        "linkDataArray": [
+                            {"from":1, "frompid":"port 2", "to":3, "topid":"port 1"},
+                            {"from":3, "frompid":"port 2", "to":6, "topid":"port 1"},
+                            {"from":3, "frompid":"port 3", "to":8, "topid":"port 1"},
+                            {"from":8, "frompid":"port 2", "to":10, "topid":"port 1"},
+                            {"from":14, "frompid":"port", "to":10, "topid":"port 2"},
+                            {"from":10, "frompid":"port 3", "to":15, "topid":"port 1"},
+                            {"from":10, "frompid":"port 4", "to":17, "topid":"port 1"},
+                            {"from":15, "frompid":"port 2", "to":19, "topid":"port 1"},
+                            {"from":17, "frompid":"port 2", "to":21, "topid":"port 1"},
+                            {"from":6, "frompid":"port 2", "to":23, "topid":"port 1"},
+                            {"from":27, "frompid":"port", "to":23, "topid":"port 2"},
+                            {"from":23, "frompid":"port 3", "to":28, "topid":"port 1"},
+                            {"from":23, "frompid":"port 4", "to":30, "topid":"port 1"},
+                            {"from":28, "frompid":"port 2", "to":32, "topid":"port 1"},
+                            {"from":30, "frompid":"port 2", "to":34, "topid":"port 1"}
+
+
+                    ]}
+                </textarea>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
