@@ -149,7 +149,48 @@
             }
             function load() {
                 myDiagram.model = go.Model.fromJson(document.getElementById("mySavedModel").value);
-            }
+                console.log('ddddddd', go.Model.fromJson(document.getElementById("mySavedModel").value))
+                const cl = { "class": "go.GraphLinksModel",
+                        "nodeCategoryProperty": "type",
+                        "linkFromPortIdProperty": "frompid",
+                        "linkToPortIdProperty": "topid",
+                        "nodeDataArray": [
+                            {"key": 1, "type": "Edge_Coupler", "name": "Edge_Coupler"},
+                            {"key": 3, "type": "PSR", "name": "PSR"},
+                            {"key": 6, "type": "Straight Waveguide", "name": "WGD_routing_1"},
+                            {"key": 8, "type": "Straight Waveguide", "name": "WGD_routing_2"},
+                            {"key": 10, "type": "RMZI", "name": "RMZI_1"},
+                            {"key": 14, "type": "Termination Mirror", "name": "TERM_2"},
+                            {"key": 15, "type": "Straight Waveguide", "name": "WGD_routing_3"},
+                            {"key": 17, "type": "Straight Waveguide", "name": "WGD_routing_4"},
+                            {"key": 19, "type": "Optical Mirror", "name": "MIRR_1"},
+                            {"key": 21, "type": "Optical Mirror", "name": "MIRR_2"},
+                            {"key": 23, "type": "RMZI", "name": "RMZI_2"},
+                            {"key": 27, "type": "Termination Mirror", "name": "TERM_1"},
+                            {"key": 28, "type": "Straight Waveguide", "name": "WGD_routing_1"},
+                            {"key": 30, "type": "Straight Waveguide", "name": "WGD_routing_2"},
+                            {"key": 32, "type": "Optical Mirror", "name": "MIRR_3"},
+                            {"key": 34, "type": "Optical Mirror", "name": "MIRR_4"}
+                        ],
+                        "linkDataArray": [
+                            {"from":1, "frompid":"port 2", "to":3, "topid":"port 1", "color": "red"},
+                            {"from":3, "frompid":"port 2", "to":6, "topid":"port 1"},
+                            {"from":3, "frompid":"port 3", "to":8, "topid":"port 1"},
+                            {"from":8, "frompid":"port 2", "to":10, "topid":"port 1"},
+                            {"from":14, "frompid":"port", "to":10, "topid":"port 2"},
+                            {"from":10, "frompid":"port 3", "to":15, "topid":"port 1"},
+                            {"from":10, "frompid":"port 4", "to":17, "topid":"port 1"},
+                            {"from":15, "frompid":"port 2", "to":19, "topid":"port 1"},
+                            {"from":17, "frompid":"port 2", "to":21, "topid":"port 1"},
+                            {"from":6, "frompid":"port 2", "to":23, "topid":"port 1"},
+                            {"from":27, "frompid":"port", "to":23, "topid":"port 2"},
+                            {"from":23, "frompid":"port 3", "to":28, "topid":"port 1"},
+                            {"from":23, "frompid":"port 4", "to":30, "topid":"port 1"},
+                            {"from":28, "frompid":"port 2", "to":32, "topid":"port 1"},
+                            {"from":30, "frompid":"port 2", "to":34, "topid":"port 1"}
+                    ]}
+                console.log("fffff", go.Model.fromJson(cl))
+            }   
             window.addEventListener('DOMContentLoaded', init);
         </script>
 
