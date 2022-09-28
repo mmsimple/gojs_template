@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script src="./go.js"></script>
+    <script>
+        function init() {
+            var $ = go.GraphObject.make;
+            myDiagram = $(go.Diagram, "myDiagramDiv", 
+                {
+                  layout: $(go.TreeLayout,
+                    { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
+                }
+            );
+
+
+            // myDiagram.groupTemplate =
+            //     $(go.Group, "Vertical",
+            //     { layout: $(go.LayeredDigraphLayout,
+            //       { direction: 0, columnSpacing: 0 }
+            //       ) },
+            //     $(go.TextBlock,         // group title
+            //         { alignment: go.Spot.Right, font: "Bold 12pt Sans-Serif" },
+            //         new go.Binding("text", "key")),
+            //     $(go.Panel, "Auto",
+                   
+            //     ),
+              
+            // );
+
+            myDiagram.groupTemplate =
+                $(go.Group, "Auto",
+                // declare the Group.layout:
+                { layout: $(go.LayeredDigraphLayout,
+                            { direction: 0, columnSpacing: 10 }) },
+                // $(go.Shape, "Rectangle",  // surrounds everything
+                //     { parameter1: 10, fill: "white" }
+                //     ),
+                $(go.Panel, "Vertical",  // position header above the subgraph
+                    $(go.TextBlock,     // group title near top, next to button
+                    { font: "Bold 12pt Sans-Serif", stroke: "blue"},
+                    new go.Binding("text", "key")),
+                    $(go.Placeholder,     // represents area for all member parts
+                    { padding: 5, background: "white" })
+                )
+                );
+
+
+            function iconElement(typename, icon) {
+                const node = $(go.Node, "Spot",
+                    $(go.Panel, "Auto",
+                        { width: 66, height: 66 },
+                        $(go.Shape, "Rectangle",
+                            {
+                                fill: "white", stroke: "black", strokeWidth: 1,
+                                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
+                            }),
+                        $(go.Panel, "Table",
+                            $(go.Picture, icon,
+                                { row: 1, width: 66, height: 66 }),
+                        )
+                    ),
+                );
+                myDiagram.nodeTemplateMap.set(typename, node);
+            }
+
+            iconElement("wgd", "./icons/symbol_straight_waveguide.png")
+
+            iconElement("y", "./icons/symbol_waveguide_y_branch.png")
+
+
+            function protElement(typename, icon) {
+                const node = $(go.Node, "Spot",
+                    $(go.Panel, "Auto",
+                        { width: 10, height: 10 },
+                        $(go.Shape, "Rectangle",
+                            {
+                                fill: "gray", stroke: "black", strokeWidth: 1,
+                                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
+                            }),
+                    ),
+                );
+                myDiagram.nodeTemplateMap.set(typename, node);
+            }
+
+            protElement("port", "")
+
+
+            myDiagram.linkTemplate =
+                $(go.Link,
+                    {
+                        routing: go.Link.Orthogonal, corner: 5,
+                        relinkableFrom: true, relinkableTo: true
+                    },
+                    $(go.Shape, { stroke: "gray", strokeWidth: 1 },
+                        new go.Binding("stroke", "color")
+                    ),
+                );
+
+            var nodeDataArray = [
+                { key: "WGD_1", isGroup: true },
+                { key: "3", type: "port", group: "WGD_1" },
+                { key: "2", type: "wgd", group: "WGD_1" },
+                { key: "4", type: "port", group: "WGD_1" },
+                { key: "Y_1", isGroup: true },
+                { key: "Y_1_1", type: "port", group: "Y_1" },
+                { key: "Y_1_2", type: "y", group: "Y_1" },
+                { key: "Y_1_3", type: "port", group: "Y_1" },
+                { key: "Y_1_4", type: "port", group: "Y_1" },
+            ];
+
+
+
+            var linkDataArray = [
+                { from: "3", to: "2", color: "black" },
+                { from: "2", to: "4", color: "black" },
+                { from: "Y_1_1", to: "Y_1_2", color: "black" },
+                { from: "Y_1_2", to: "Y_1_3", color: "black" },
+                { from: "Y_1_2", to: "Y_1_4", color: "black" },
+            ];
+
+
+            var setElement = {
+                class: go.GraphLinksModel,
+                nodeCategoryProperty: "type",
+                linkFromPortIdProperty: "frompid",
+                linkToPortIdProperty: "topid",
+                nodeDataArray: nodeDataArray,
+                linkDataArray: linkDataArray
+            }
+
+            // myDiagram.isReadOnly = true;
+            myDiagram.model = go.Model.fromJson(setElement);
+            // myDiagram.nodeTemplate = $(go.Node, "Auto",
+            //     $(go.Shape, "RoundedRectangle", { fill: "white" },
+            //         new go.Binding("fill", "color")
+            //     ),
+            //     $(go.TextBlock, "text", { margin: 10 },
+            //         new go.Binding("text", "key")
+            //     )
+            // );
+
+            // myDiagram.linkTemplate = $(go.Link,
+            //     $(go.Shape, { strokeWidth: 3 },
+            //         new go.Binding("stroke", "color")
+            //     ),
+            //     $(go.Shape, { toArrow: "Standard", stroke: null },
+            //         new go.Binding("fill", "color")
+            //     )
+            // )
+
+        }
+
+    </script>
+
+</head>
+
+<body onload="init()">
+    <div id="myDiagramDiv" style="width:1000px; height:800px; border:1px solid black;"></div>
+</body>
+
+</html>
