@@ -11,48 +11,39 @@
     <script>
         function init() {
             var $ = go.GraphObject.make;
-            myDiagram = $(go.Diagram, "myDiagramDiv", 
+            myDiagram = $(go.Diagram, "myDiagramDiv",
                 {
-                  layout: $(go.TreeLayout,
-                    { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
+                    layout: $(go.TreeLayout,
+                        { angle: 90, nodeSpacing: 10, layerSpacing: 30 })
                 }
             );
 
-
-            // myDiagram.groupTemplate =
-            //     $(go.Group, "Vertical",
-            //     { layout: $(go.LayeredDigraphLayout,
-            //       { direction: 0, columnSpacing: 0 }
-            //       ) },
-            //     $(go.TextBlock,         // group title
-            //         { alignment: go.Spot.Right, font: "Bold 12pt Sans-Serif" },
-            //         new go.Binding("text", "key")),
-            //     $(go.Panel, "Auto",
-                   
-            //     ),
-              
-            // );
-
             myDiagram.groupTemplate =
                 $(go.Group, "Auto",
-                // declare the Group.layout:
-                { layout: $(go.LayeredDigraphLayout,
-                            { direction: 0, columnSpacing: 10 }) },
-                // $(go.Shape, "Rectangle",  // surrounds everything
-                //     { parameter1: 10, fill: "white" }
-                //     ),
-                $(go.Panel, "Vertical",  // position header above the subgraph
-                    $(go.TextBlock,     // group title near top, next to button
-                    { font: "Bold 12pt Sans-Serif", stroke: "blue"},
-                    new go.Binding("text", "key")),
-                    $(go.Placeholder,     // represents area for all member parts
-                    { padding: 5, background: "white" })
-                )
+                    // declare the Group.layout:
+                    {
+                        layout: $(go.LayeredDigraphLayout,
+                            { direction: 0, columnSpacing: 10 })
+                    },
+                    // $(go.Shape, "Rectangle",  // surrounds everything
+                    //     { parameter1: 10, fill: "white" }
+                    //     ),
+                    $(go.Panel, "Vertical",  // position header above the subgraph
+                        $(go.TextBlock,     // group title near top, next to button
+                            { font: "Bold 12pt Sans-Serif", stroke: "blue" },
+                            new go.Binding("text", "key")),
+                        $(go.Placeholder,     // represents area for all member parts
+                            { padding: 5, background: "white" })
+                    )
                 );
 
 
             function iconElement(typename, icon) {
-                const node = $(go.Node, "Spot",
+                const node = $(go.Node, "Auto",
+                    {
+                        fromSpot: go.Spot.RightSide,  // coming out from right side
+                        toSpot: go.Spot.LeftSide
+                    },
                     $(go.Panel, "Auto",
                         { width: 66, height: 66 },
                         $(go.Shape, "Rectangle",
@@ -89,6 +80,8 @@
             }
 
             protElement("port", "")
+
+
 
 
             myDiagram.linkTemplate =

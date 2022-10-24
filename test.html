@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function init() {
+            const $ = go.GraphObject.make;  // for conciseness in defining templates
+
+            myDiagram =
+                $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
+                    {
+                        "draggingTool.isGridSnapEnabled": true,  // dragged nodes will snap to a grid of 10x10 cells
+                        "undoManager.isEnabled": true
+                    });
+            
+            var palette = new go.Palette("palette");
+        }
+    </script>
+</body>
+
+</html>
