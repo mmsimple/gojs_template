@@ -36,7 +36,7 @@
 
         // when the diagram is vertically oriented, "left" means "top" and "right" means "bottom"
         function makePort(name, leftside) {
-          var port = $(go.Shape, "Circle", {
+          var port = $(go.Shape, "Rectangle", {
             fill: "#555555",
             stroke: null,
             desiredSize: new go.Size(10, 10),
@@ -51,18 +51,18 @@
             });
 
           var panel = $(go.Panel, "Vertical", {
-            margin: new go.Margin(0, 2)
+            margin: new go.Margin(2, 0)
           });
 
           if (leftside) {
-            port.toSpot = go.Spot.Top;
+            port.toSpot = go.Spot.Left;
             port.toLinkable = true;
             lab.margin = new go.Margin(1, 0, 0, 1);
             panel.alignment = go.Spot.TopLeft;
             panel.add(port);
             panel.add(lab);
           } else {
-            port.fromSpot = go.Spot.Bottom;
+            port.fromSpot = go.Spot.Right;
             port.fromLinkable = true;
             lab.margin = new go.Margin(1, 1, 0, 0);
             panel.alignment = go.Spot.TopRight;

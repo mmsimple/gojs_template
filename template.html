@@ -35,7 +35,7 @@
 
 
             function iconElement(typename, icon, left, right, top) {
-                const node = $(go.Node, "Auto",
+                const node = $(go.Node, "Table",
                     $(go.Panel, "Auto",
                         { width: 66, height: 66, },
                         $(go.Shape, "Rectangle",
@@ -48,24 +48,85 @@
                                 { row: 1, width: 66, height: 66 }),
                         ),
                     ),
+                    // $(go.Panel, "Vertical",
+                    //     {
+                    //         alignment: go.Spot.Left,
+                    //         alignmentFocus: new go.Spot(0, 0.5, 8, 0)
+                    //     }, left
+                    // ),
                     $(go.Panel, "Vertical",
+                        new go.Binding("itemArray", "leftArray"),
                         {
-                            alignment: go.Spot.Left,
-                            alignmentFocus: new go.Spot(0, 0.5, 8, 0)
-                        }, left
+                            row: 1, column: 0,
+                            itemTemplate:
+                                $(go.Panel,
+                                    {
+                                        _side: "left",  // internal property to make it easier to tell which side it's on
+                                        fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
+                                        fromLinkable: true, toLinkable: true, cursor: "pointer",
+                                    },
+                                    new go.Binding("portId", "portId"),
+                                    $(go.Shape, "Rectangle",
+                                        {
+                                            stroke: null, strokeWidth: 0,
+                                            desiredSize: new go.Size(8, 8),
+                                            margin: new go.Margin(1, 0)
+                                        },
+                                        new go.Binding("fill", "portColor"))
+                                )  // end itemTemplate
+                        }
                     ),
                     $(go.Panel, "Horizontal",
+                        new go.Binding("itemArray", "topArray"),
                         {
-                            alignment: go.Spot.Top,
-                            alignmentFocus: new go.Spot(0.5, 0, 0, 8)
-                        }, top
+                            row: 0, column: 1,
+                            itemTemplate:
+                                $(go.Panel,
+                                    {
+                                        _side: "top",
+                                        fromSpot: go.Spot.Top, toSpot: go.Spot.Top,
+                                        fromLinkable: true, toLinkable: true, cursor: "pointer",
+                                        // contextMenu: portMenu
+                                    },
+                                    new go.Binding("portId", "portId"),
+                                    $(go.Shape, "Rectangle",
+                                        {
+                                            stroke: null, strokeWidth: 0,
+                                            desiredSize: new go.Size(8, 8),
+                                            margin: new go.Margin(0, 1)
+                                        },
+                                        new go.Binding("fill", "portColor"))
+                                )  // end itemTemplate
+                        }
                     ),
                     $(go.Panel, "Vertical",
+                        new go.Binding("itemArray", "rightArray"),
                         {
-                            alignment: go.Spot.Right,
-                            alignmentFocus: new go.Spot(0, 0.5, 8, 0)
-                        }, right
-                    ),
+                            row: 1, column: 2,
+                            itemTemplate:
+                                $(go.Panel,
+                                    {
+                                        _side: "right",
+                                        fromSpot: go.Spot.Right, toSpot: go.Spot.Right,
+                                        fromLinkable: true, toLinkable: true, cursor: "pointer",
+                                    },
+                                    new go.Binding("portId", "portId"),
+                                    $(go.Shape, "Rectangle",
+                                        {
+                                            stroke: null, strokeWidth: 0,
+                                            desiredSize: new go.Size(8, 8),
+                                            margin: new go.Margin(1, 0)
+                                        },
+                                        new go.Binding("fill", "portColor"))
+                                )  // end itemTemplate
+                        }
+                    ),  // end Vertical Panel
+                    // $(go.Panel, "Vertical",
+                    //     {
+                    //         alignment: go.Spot.Right,
+                    //         alignmentFocus: new go.Spot(0, 0.5, 8, 0)
+                    //     }, right
+                    // ),
                 );
                 myDiagram.nodeTemplateMap.set(typename, node);
             }
@@ -137,7 +198,7 @@
                         $(go.Shape, shape,
                             {
                                 fill: color, stroke: "black", strokeWidth: 1,
-                                // spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
+                                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
                             }),
                     ),
                 );
@@ -173,9 +234,8 @@
                 { key: "OM_1", isGroup: true },
                 { key: "OM_1_1", type: "port", group: "OM_1" },
                 { key: "OM_1_4", type: "port", group: "OM_1" },
-                { key: "OM_1_2", type: "om", group: "OM_1" },
                 { key: "OM_1_3", type: "port", group: "OM_1" },
-
+                { key: "OM_1_2", type: "om", group: "OM_1", leftArray: [{ portColor: "#d6effc", portId: 4 }], topArray: [{ portColor: "#d6effc", portId: 3 }] },
             ];
 
 
@@ -187,17 +247,17 @@
                 // { from: "Y_1_2", to: "Y_1_3", color: "black" },
                 // { from: "Y_1_2", to: "Y_1_4", color: "black" },
                 // { from: "DC_1_1", to: "DC_1_2", color: "black" },
-                { from: "OM_1_2", frompid: "port3", to: "OM_1_4", color: "black" },
-                { from: "OM_1_1", frompid: "port1", to: "OM_1_2", color: "black" },
-                { from: "OM_1_2", frompid: "port2", to: "OM_1_3", color: "black" },
+                // { from: "OM_1_2", frompid: "port3", to: "OM_1_4", color: "black" },
+                // { from: "OM_1_1", frompid: "port1", to: "OM_1_2", color: "black" },
+                // { from: "OM_1_2", frompid: "port2", to: "OM_1_3", color: "black" },
             ];
 
 
             var setElement = {
                 class: go.GraphLinksModel,
                 nodeCategoryProperty: "type",
-                linkFromPortIdProperty: "frompid",
-                linkToPortIdProperty: "topid",
+                // linkFromPortIdProperty: "frompid",
+                // linkToPortIdProperty: "topid",
                 nodeDataArray: nodeDataArray,
                 linkDataArray: linkDataArray
             }
