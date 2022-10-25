@@ -6,23 +6,66 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
 
-<body>
+    <script src="./go.js"></script>
     <script>
         function init() {
             const $ = go.GraphObject.make;  // for conciseness in defining templates
 
-            myDiagram =
-                $(go.Diagram, "myDiagramDiv",  // create a new Diagram in the HTML DIV element "myDiagramDiv"
-                    {
-                        "draggingTool.isGridSnapEnabled": true,  // dragged nodes will snap to a grid of 10x10 cells
-                        "undoManager.isEnabled": true
-                    });
-            
-            var palette = new go.Palette("palette");
+            myDiagram = $(go.Diagram, "myDiagramDiv",
+                {
+                    layout: $(go.TreeLayout,
+                        { angle: 90, nodeSpacing: 10, layerSpacing: 30 }),
+                    "undoManager.isEnabled": true
+                }
+            );
+
+            myDiagram.nodeTemplate =
+                $(go.Node, "Auto",
+                    { fromSpot: go.Spot.AllSides, toSpot: go.Spot.AllSides },
+                    $(go.Shape,
+                        { fill: "white", strokeWidth: 0 },
+                        new go.Binding("fill", "color")),
+                    $(go.TextBlock,
+                        { margin: 12 },
+                        new go.Binding("text"))
+                );
+
+            var nodeDataArray = [
+                { "key": 1, "text": "Alpha", "color": "lightblue" },
+                { "key": 2, "text": "Beta", "color": "orange" },
+                { "key": 3, "text": "Gamma", "color": "lightgreen" },
+                { "key": 4, "text": "Delta", "color": "pink" },
+                { "key": 5, "text": "Epsilon", "color": "gold" }
+            ]
+
+            var linkDataArray = [
+                { "from": 1, "to": 2, "colors": ["red", "orange", "gold", "green", "blue"] },
+                { "from": 1, "to": 3, "colors": ["red", "blue"] },
+                { "from": 1, "to": 4, "colors": ["purple", "orange", "green"] },
+                { "from": 4, "to": 5, "colors": ["fuchsia"] },
+                { "from": 5, "to": 2 }
+            ]
+        
+
+            var setElement = {
+                class: go.GraphLinksModel,
+                nodeCategoryProperty: "type",
+                // linkFromPortIdProperty: "frompid",
+                // linkToPortIdProperty: "topid",
+                nodeDataArray: nodeDataArray,
+                linkDataArray: linkDataArray
+            }
+
+
+        var palette = new go.Palette("palette");
         }
     </script>
+</head>
+
+<body onload="init()">
+    <div id="myDiagramDiv" style="width:1000px; height:800px; border:1px solid black;"></div>
 </body>
+
 
 </html>
