@@ -9,8 +9,8 @@
 
     <style>
         .myDiagram {
-            width:1600px; 
-            height:950px; 
+            width: 1600px;
+            height: 950px;
             /* border:1px solid black; */
         }
     </style>
@@ -25,7 +25,7 @@
                     initialContentAlignment: go.Spot.Left,
                     initialAutoScale: go.Diagram.UniformToFill,
                     layout: $(go.TreeLayout,
-                        { angle: 0, nodeSpacing: 10, layerSpacing: 30})
+                        { angle: 0, nodeSpacing: 10, layerSpacing: 30 })
                 }
             );
 
@@ -33,7 +33,7 @@
                 $(go.Group, "Auto",
                     {
                         layout: $(go.LayeredDigraphLayout,
-                            { direction: 0, columnSpacing: 7.75 })
+                            { direction: 0, columnSpacing: 0 })
                     },
                     $(go.Panel, "Vertical",  // position header above the subgraph
                         $(go.TextBlock,     // group title near top, next to button
@@ -46,7 +46,7 @@
 
 
             function iconElement(typename, icon, left, top, right, bottom) {
-                const node = $(go.Node, "Table",
+                const node = $(go.Node, "Spot",
                     $(go.Panel, "Auto",
                         { width: 66, height: 66, },
                         $(go.Shape, "Rectangle",
@@ -74,27 +74,28 @@
                     $(go.Panel, "Vertical",
                         {
                             alignment: go.Spot.Right,
-                            alignmentFocus: new go.Spot(0, 0.5, 8, 0)
+                            alignmentFocus: new go.Spot(1, 0.5, -8, 0)
                         }, right
                     ),
                     $(go.Panel, "Horizontal",
                         {
                             alignment: go.Spot.Bottom,
-                            alignmentFocus: new go.Spot(0.5, 0, 0, 8)
+                            alignmentFocus: new go.Spot(0.5, -1, 0, 8)
                         }, bottom
                     ),
                 )
-                    myDiagram.nodeTemplateMap.set(typename, node)
+                myDiagram.nodeTemplateMap.set(typename, node)
             }
 
 
             //  Horizontal  Vertical
-            function iconPort(name, horizontal, leftside) {
-                const port = $(go.Shape, "Rectangle",
+            function iconPort(name, horizontal, leftside, shape, color) {
+                const port = $(go.Shape, shape,
                     {
-                        fill: "gray", stroke: null,
+                        fill: color, 
+                        stroke: "black", 
+                        strokeWidth: 1,
                         desiredSize: new go.Size(8, 8),
-                        portId: name,
                         toMaxLinks: 5,
                     })
                 var panel = null
@@ -134,40 +135,37 @@
             }
 
 
-            iconElement("wgd", "./icons/symbol_straight_waveguide.png", [], [], [],[])
-            iconElement("y", "./icons/symbol_waveguide_y_branch.png", 
-                [iconPort("port1", true, true)], [], [iconPort("port2", true, true), iconPort("port3", true, true)], [])
+            iconElement("wgd", "./icons/symbol_straight_waveguide.png", 
+                [iconPort("port1", true, true, "Rectangle", "green")], 
+                [], 
+                [iconPort("port1", true, true, "Rectangle", "green")], 
+                [])
+            iconElement("y", "./icons/symbol_waveguide_y_branch.png",
+                [iconPort("port1", true, true, "Rectangle", "green")], 
+                [], 
+                [iconPort("port2", true, true, "Rectangle", "green"), iconPort("port3", true, true, "Rectangle", "green")],
+                [])
             iconElement("om", "./icons/symbol_optical_modulator_measured.png",
-                [iconPort("port1", true, true)], [iconPort("port2", false, true)], [iconPort("port3", true, true)], [])
-            iconElement("ona", "./icons/symbol_optical_network_analyzer.png", 
-                [], [], [], [iconPort("port1", false, true), iconPort("port2", false, true)])
-            iconElement("dc", "./icons/symbol_dc_source.png", [], [], [], [])
+                [iconPort("port1", true, true, "Rectangle", "green")], 
+                [iconPort("port2", false, true, "TriangleDown", "blue")], 
+                [iconPort("port3", true, true, "Rectangle", "green")], 
+                [])
+            iconElement("ona", "./icons/symbol_optical_network_analyzer.png",
+                [], 
+                [], 
+                [], 
+                [iconPort("port1", false, true, "TriangleDown", "green"), iconPort("port2", false, true, "Circle", "green")])
+            iconElement("dc", "./icons/symbol_dc_source.png", 
+                [], 
+                [], 
+                [iconPort("port3", true, true, "TriangleRight", "blue")], 
+                [])
 
             iconElement("y_m", "./icons/symbol_waveguide_y_branch_mirror.png",
-                [iconPort("port1", true, true), iconPort("port2", true, true)], [], [iconPort("port3", true, true)], [])
-
-
-            function protElement(typename, shape, color) {
-                const node = $(go.Node, "Spot",
-                    $(go.Panel, "Auto",
-                        { width: 10, height: 10 },
-                        $(go.Shape, shape,
-                            {
-                                fill: color, stroke: "black", strokeWidth: 1,
-                                spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
-                            }),
-                    ),
-                );
-                myDiagram.nodeTemplateMap.set(typename, node);
-            }
-
-            protElement("port", "Rectangle", "green")
-            protElement("eport", "TriangleRight", "blue")
-            protElement("tport", "TriangleLeft", "blue")
-            protElement("dport", "TriangleDown", "green")
-            protElement("cport", "Circle", "green")
-
-            console.log('window.innerHeight', window.innerHeight,  window.innerWidth)
+                [iconPort("port1", true, true, "Rectangle", "green"), iconPort("port2", true, true, "Rectangle", "green")], 
+                [], 
+                [iconPort("port3", true, true, "Rectangle", "green")], 
+                [])
 
 
             myDiagram.linkTemplate =
@@ -182,104 +180,40 @@
 
             var nodeDataArray = [
                 { key: "WGD_1", isGroup: true },
-                { key: "WGD_1_2", type: "port", group: "WGD_1", movable: false },
                 { key: "WGD_1_1", type: "wgd", group: "WGD_1" },
-                { key: "WGD_1_3", type: "port", group: "WGD_1" },
 
                 { key: "WGD_2", isGroup: true },
-                { key: "WGD_2_2", type: "port", group: "WGD_2" },
                 { key: "WGD_2_1", type: "wgd", group: "WGD_2" },
-                { key: "WGD_2_3", type: "port", group: "WGD_2" },
 
                 { key: "WGD_3", isGroup: true },
-                { key: "WGD_3_2", type: "port", group: "WGD_3" },
                 { key: "WGD_3_1", type: "wgd", group: "WGD_3" },
-                { key: "WGD_3_3", type: "port", group: "WGD_3" },
 
                 { key: "Y_1", isGroup: true },
-                { key: "Y_1_1", type: "port", group: "Y_1" },
-                { key: "Y_1_2", type: "y", group: "Y_1" },
-                { key: "Y_1_3", type: "port", group: "Y_1" },
-                { key: "Y_1_4", type: "port", group: "Y_1" },
+                { key: "Y_1_1", type: "y", group: "Y_1" },
 
                 { key: "DC_1", isGroup: true },
                 { key: "DC_1_1", type: "dc", group: "DC_1" },
-                { key: "DC_1_2", type: "eport", group: "DC_1" },
 
                 { key: "DC_2", isGroup: true },
                 { key: "DC_2_1", type: "dc", group: "DC_2" },
-                { key: "DC_2_2", type: "eport", group: "DC_2" },
 
                 { key: "OM_1", isGroup: true },
-                { key: "OM_1_1", type: "port", group: "OM_1" },
-                { key: "OM_1_4", type: "tport", group: "OM_1" },
-                { key: "OM_1_3", type: "port", group: "OM_1" },
-                { key: "OM_1_2", type: "om", group: "OM_1"},
+                { key: "OM_1_1", type: "om", group: "OM_1" },
 
                 { key: "OM_2", isGroup: true },
-                { key: "OM_2_1", type: "port", group: "OM_2" },
-                { key: "OM_2_4", type: "tport", group: "OM_2" },
-                { key: "OM_2_3", type: "port", group: "OM_2" },
-                { key: "OM_2_2", type: "om", group: "OM_2"},
+                { key: "OM_2_1", type: "om", group: "OM_2" },
 
                 { key: "ONA_1", isGroup: true },
                 { key: "ONA_1_1", type: "ona", group: "ONA_1" },
-                { key: "ONA_1_2", type: "dport", group: "ONA_1" },
-                { key: "ONA_1_3", type: "cport", group: "ONA_1"},
-                
-                { key: "Y_M_1", isGroup: true},
-                { key: "Y_M_1_2", type: "port", group: "Y_M_1" },
-                { key: "Y_M_1_3", type: "port", group: "Y_M_1"},
-                { key: "Y_M_1_1", type: "y_m", group: "Y_M_1"},
-                { key: "Y_M_1_4", type: "port", group: "Y_M_1"},
 
-
+                { key: "Y_M_1", isGroup: true },
+                { key: "Y_M_1_1", type: "y_m", group: "Y_M_1" },
             ];
 
 
             var linkDataArray = [
-                { from: "WGD_1_2", to: "WGD_1_1", color: "black" },
-                { from: "WGD_1_1", to: "WGD_1_3", color: "black" },
-
-                { from: "WGD_2_2", to: "WGD_2_1", color: "black" },
-                { from: "WGD_2_1", to: "WGD_2_3", color: "black" },
-
-                { from: "WGD_3_2", to: "WGD_3_1", color: "black" },
-                { from: "WGD_3_1", to: "WGD_3_3", color: "black" },
-
-                { from: "Y_1_1", frompid: "port1", to: "Y_1_2", color: "black" },
-                { from: "Y_1_2", frompid: "port2", to: "Y_1_3", color: "black" },
-                { from: "Y_1_2", frompid: "port3", to: "Y_1_4", color: "black" },
-
-                { from: "DC_1_1", to: "DC_1_2", color: "black" },
-                { from: "DC_2_1", to: "DC_2_2", color: "black" },
-
-                { from: "OM_1_2", frompid: "port2", to: "OM_1_4", color: "black" },
-                { from: "OM_1_1", frompid: "port1", to: "OM_1_2", color: "black" },
-                { from: "OM_1_2", frompid: "port3", to: "OM_1_3", color: "black" },
-
-                { from: "OM_2_2", frompid: "port2", to: "OM_2_4", color: "black" },
-                { from: "OM_2_1", frompid: "port1", to: "OM_2_2", color: "black" },
-                { from: "OM_2_2", frompid: "port3", to: "OM_2_3", color: "black" },
-
-                { from: "ONA_1_2", topid: "port1", to: "ONA_1_1", color: "black" },
-                { from: "ONA_1_1", frompid: "port2", to: "ONA_1_3", color: "black" },
-
-                { from: "Y_M_1_2", topid: "port1", to: "Y_M_1_1", color: "black" },
-                { from: "Y_M_1_3", topid: "port2", to: "Y_M_1_1", color: "black" },
-                { from: "Y_M_1_1", frompid: "port3", to: "Y_M_1_4", color: "black" },
-
-                { from: "Y_1_3", to: "WGD_1_2", color: "green"},
-                { from: "Y_1_4", to: "WGD_2_2", color: "green"},
-                { from: "WGD_1_3", to: "WGD_3_2", color: "green"},
-                { from: "WGD_2_3", to: "OM_2_1", color: "green"},
-                { from: "WGD_3_3", to: "OM_1_1", color: "green"},
-                { from: "OM_1_3", to: "Y_M_1_2", color: "green"},
-                { from: "OM_2_3", to: "Y_M_1_3", color: "green"},
-                { from: "DC_1_2", to: "OM_1_4", color: "green"},
-                { from: "DC_2_2", to: "OM_2_4", color: "green"},
-                { from: "ONA_1_2", to: "Y_1_1", color: "green"},
-                { from: "ONA_1_3", to: "Y_M_1_4", color: "green"},
+                {from: "Y_1_1", to: "WGD_1_1", frompid: "port2", topid: "port1", color: "green"},
+                {from: "WGD_1_1", to: "WGD_2_1", frompid: "port2", topid: "port1", color: "green"}
             ];
 
 
