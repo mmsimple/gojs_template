@@ -9,10 +9,10 @@
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            initialContentAlignment: go.Spot.Left,
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.LayeredDigraphLayout,
-              { direction: 0, columnSpacing: 0 }),
+            // initialContentAlignment: go.Spot.Left,
+            // initialAutoScale: go.Diagram.UniformToFill,
+            // layout: $(go.LayeredDigraphLayout,
+            //   { direction: 0, columnSpacing: 0 }),
             "undoManager.isEnabled": true
           }
         );
@@ -61,7 +61,7 @@
             panel.add(port);
           }
         } else {
-          panel = $(go.Panel, "Vertical",
+          panel = $(go.Panel, "Horizontal",
             { margin: new go.Margin(0, 11) });
           if (leftside) {
             port.fromSpot = go.Spot.Top;
@@ -98,7 +98,9 @@
           ),
           $(go.Panel, "Vertical",
             {
-              alignment: go.Spot.Left,
+              row: 1, column: 0,
+              _side: "left",
+              // alignment: go.Spot.Left,
               fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
               fromLinkable: true, toLinkable: true,
               alignmentFocus: new go.Spot(0, 0.5, 8, 0)
@@ -106,6 +108,7 @@
           ),
           $(go.Panel, "Horizontal",
             {
+              _side: "top",
               alignment: go.Spot.Top,
               fromSpot: go.Spot.Top, toSpot: go.Spot.Top,
               fromLinkable: true, toLinkable: true,
@@ -114,6 +117,7 @@
           ),
           $(go.Panel, "Vertical",
             {
+              _side: "right",
               alignment: go.Spot.Right,
               fromSpot: go.Spot.Right, toSpot: go.Spot.Right,
               fromLinkable: true, toLinkable: true,
@@ -122,6 +126,7 @@
           ),
           $(go.Panel, "Horizontal",
             {
+              _side: "bottom",
               alignment: go.Spot.Bottom,
               fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom,
               fromLinkable: true, toLinkable: true,
@@ -152,7 +157,7 @@
       iconElement("om", "./icons/symbol_optical_modulator_measured.png",
         [iconPort("port1", true, true, "Rectangle", "green")],
         [iconPort("port2", false, true, "TriangleDown", "blue")],
-        [iconPort("port3", true, false, "Rectangle", "green")],
+        [iconPort("port3", true, true, "Rectangle", "green")],
         [])
 
       iconElement("ona", "./icons/symbol_optical_network_analyzer.png",
@@ -213,17 +218,17 @@
       ]
 
       var linkDataArray = [
-        { from: "Y_1_1", to: "WGD_1_1", frompid: "port2", topid: "port1", color: "green" },
-        { from: "Y_1_1", to: "WGD_2_1", frompid: "port3", topid: "port2", color: "green" },
-        { from: "WGD_1_1", to: "WGD_3_1", frompid: "port2", topid: "port1", color: "green" },
-        { from: "WGD_3_1", to: "OM_1_1", frompid: "port2", topid: "port1", color: "green" },
-        { from: "WGD_2_1", to: "OM_2_1", frompid: "port2", topid: "port1", color: "green" },
-        { from: "OM_1_1", to: "Y_M_1_1", frompid: "port3", topid: "port1", color: "green" },
-        { from: "OM_2_1", to: "Y_M_1_1", frompid: "port3", topid: "port2", color: "green" },
-        { from: "DC_1_1", to: "OM_1_1", frompid: "port1", topid: "port2", color: "blue" },
-        { from: "DC_2_1", to: "OM_2_1", frompid: "port1", topid: "port2", color: "blue" },
-        { from: "ONA_1_1", to: "Y_1_1", frompid: "port1", topid: "port1", color: "green" },
-        { from: "Y_M_1_1", to: "ONA_1_1", frompid: "port3", topid: "port2", color: "green" },
+        // { from: "Y_1_1", to: "WGD_1_1", frompid: "port2", topid: "port1", color: "green" },
+        // { from: "Y_1_1", to: "WGD_2_1", frompid: "port3", topid: "port2", color: "green" },
+        // { from: "WGD_1_1", to: "WGD_3_1", frompid: "port2", topid: "port1", color: "green" },
+        // { from: "WGD_3_1", to: "OM_1_1", frompid: "port2", topid: "port1", color: "green" },
+        // { from: "WGD_2_1", to: "OM_2_1", frompid: "port2", topid: "port1", color: "green" },
+        // { from: "OM_1_1", to: "Y_M_1_1", frompid: "port3", topid: "port1", color: "green" },
+        // { from: "OM_2_1", to: "Y_M_1_1", frompid: "port3", topid: "port2", color: "green" },
+        // { from: "DC_1_1", to: "OM_1_1", frompid: "port1", topid: "port2", color: "blue" },
+        // { from: "DC_2_1", to: "OM_2_1", frompid: "port1", topid: "port2", color: "blue" },
+        // { from: "ONA_1_1", to: "Y_1_1", frompid: "port1", topid: "port1", color: "green" },
+        // { from: "Y_M_1_1", to: "ONA_1_1", frompid: "port3", topid: "port2", color: "green" },
       ]
 
       var setElement = {
@@ -231,6 +236,8 @@
         nodeCategoryProperty: "type",
         linkFromPortIdProperty: "frompid",
         linkToPortIdProperty: "topid",
+        copiesArrays: true,
+        copiesArrayObjects: true,
         nodeDataArray: nodeDataArray,
         linkDataArray: linkDataArray
       }

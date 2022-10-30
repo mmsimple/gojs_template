@@ -2,20 +2,24 @@
 <html lang="en">
 
 <head>
-  <script id="code">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./go.js"></script>
+  <script>
     function init() {
-      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
-      var $ = go.GraphObject.make;
+      const $ = go.GraphObject.make;
+
       myDiagram =
         $(go.Diagram, "myDiagramDiv",
           {
-            initialContentAlignment: go.Spot.Left,
-            initialAutoScale: go.Diagram.UniformToFill,
-            layout: $(go.LayeredDigraphLayout,
-              { direction: 0, columnSpacing: 0 }),
+            layout: $(go.ForceDirectedLayout),
             "undoManager.isEnabled": true
-          }
-        );
+          });
+
+      const portSize = new go.Size(8, 8);
+
 
       myDiagram.groupTemplate =
         $(go.Group, "Auto",
@@ -38,27 +42,33 @@
             fill: color, stroke: null,
             desiredSize: new go.Size(8, 8),
             portId: name,  // declare this object to be a "port"
-            toMaxLinks: 1,  // don't allow more than one link into a port
-            cursor: "pointer"  // show a different cursor to indicate potential link point
           });
-        var panel = null
+
+        var panel = null;
+        var lab = $(go.TextBlock, name, // the name of the port
+          {
+            font: "12pt sans-serif",
+            margin: 5
+          });
         if (horizontal) {
           panel = $(go.Panel, "Horizontal",
-            { margin: new go.Margin(11, 0) });
+            { margin: new go.Margin(5, 0) });
           if (leftside) {
-            port.fromSpot = go.Spot.Left,
+            port.fromSpot = go.Spot.Left;
             port.toSpot = go.Spot.Left;
             port.fromLinkable = true;
             port.toLinkable = true;
-            panel.alignment = go.Spot.TopLeft;
+            panel.add(lab);
+            lab.margin = new go.Margin(1, 0, 0, 0);
             panel.add(port);
           } else {
-            port.toSpot = go.Spot.Right;
             port.fromSpot = go.Spot.Right;
+            port.toSpot = go.Spot.Right;
             port.fromLinkable = true;
             port.toLinkable = true;
-            panel.alignment = go.Spot.TopRight;
             panel.add(port);
+            panel.add(lab);
+            lab.margin = new go.Margin(1, 0, 0, 0);
           }
         } else {
           panel = $(go.Panel, "Vertical",
@@ -68,85 +78,93 @@
             port.toSpot = go.Spot.Top;
             port.fromLinkable = true;
             port.toLinkable = true;
-            panel.alignment = go.Spot.TopLeft;
+            panel.add(lab);
+            lab.margin = new go.Margin(1, 0, 0, 0);
             panel.add(port);
           } else {
             port.fromSpot = go.Spot.Bottom;
             port.toSpot = go.Spot.Bottom;
             port.fromLinkable = true;
             port.toLinkable = true;
-            panel.alignment = go.Spot.TopRight;
             panel.add(port);
+            panel.add(lab);
+            lab.margin = new go.Margin(1, 0, 0, 0);
           }
         }
-        return panel;
+        return panel
       }
-      // 设置模板
+
+
+
       function iconElement(typename, icon, left, top, right, bottom) {
-        var node = $(go.Node, "Spot",
-          $(go.Panel, "Auto",
-            { width: 66, height: 66 },
-            $(go.Shape, "Rectangle",
+        const node =
+          $(go.Node, "Table",
+            {
+              locationObjectName: "BODY",
+              locationSpot: go.Spot.Center,
+              selectionObjectName: "BODY",
+            },
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            $(go.Panel, "Auto",
               {
-                fill: "white", stroke: "black", strokeWidth: 1,
-                // spot1: go.Spot.TopLeft, spot2: go.Spot.BottomRight
-              }),
-            $(go.Panel, "Table",
-              $(go.Picture, icon,
-                { row: 1, width: 66, height: 66 }),
+                row: 1, column: 1, name: "BODY",
+                stretch: go.GraphObject.Fill
+              },
+              $(go.Shape, "Rectangle",
+                {
+                  fill: "white", stroke: "black", strokeWidth: 1,
+                  minSize: new go.Size(60, 60)
+                }),
+              $(go.Panel, "Table",
+                $(go.Picture, icon,
+                  { row: 1, width: 66, height: 66 }),
+              ),
+            ),
+            $(go.Panel, "Vertical",
+              {
+                row: 1, column: 0,
+              }, left
+            ),
+
+            $(go.Panel, "Horizontal",
+              {
+                row: 0, column: 1,
+              }, top
+            ),
+
+            $(go.Panel, "Vertical",
+              {
+                row: 1, column: 2,
+              }, right
+            ),
+
+            $(go.Panel, "Horizontal",
+              {
+                row: 2, column: 1,
+              }, bottom
             )
-          ),
-          $(go.Panel, "Vertical",
-            {
-              alignment: go.Spot.Left,
-              fromSpot: go.Spot.Left, toSpot: go.Spot.Left,
-              fromLinkable: true, toLinkable: true,
-              alignmentFocus: new go.Spot(0, 0.5, 8, 0)
-            }, left
-          ),
-          $(go.Panel, "Horizontal",
-            {
-              alignment: go.Spot.Top,
-              fromSpot: go.Spot.Top, toSpot: go.Spot.Top,
-              fromLinkable: true, toLinkable: true,
-              alignmentFocus: new go.Spot(0.5, 0, 0, 8)
-            }, top
-          ),
-          $(go.Panel, "Vertical",
-            {
-              alignment: go.Spot.Right,
-              fromSpot: go.Spot.Right, toSpot: go.Spot.Right,
-              fromLinkable: true, toLinkable: true,
-              alignmentFocus: new go.Spot(1, 0.5, -8, 0)
-            }, right
-          ),
-          $(go.Panel, "Horizontal",
-            {
-              alignment: go.Spot.Bottom,
-              fromSpot: go.Spot.Bottom, toSpot: go.Spot.Bottom,
-              fromLinkable: true, toLinkable: true,
-              alignmentFocus: new go.Spot(0.5, 0, 0, -8)
-            }, bottom
-          ),
-        );
+          );  // end Node
         myDiagram.nodeTemplateMap.set(typename, node);
+
       }
+
       iconElement("wgd", "./icons/symbol_straight_waveguide.png",
         [iconPort("port1", true, true, "Rectangle", "green")],
         [],
-        [iconPort("port3", true, false, "Rectangle", "green")],
-        []);
-
+        [iconPort("port2", true, false, "Rectangle", "green")],
+        []
+      )
       iconElement("y", "./icons/symbol_waveguide_y_branch.png",
         [iconPort("port1", true, true, "Rectangle", "green")],
         [],
-        [iconPort("port2", true, true, "Rectangle", "green"), iconPort("port3", true, true, "Rectangle", "green")],
-        [])
+        [iconPort("port2", true, false, "Rectangle", "green"), iconPort("port3", true, false, "Rectangle", "green")],
+        []
+      )
 
       iconElement("dc", "./icons/symbol_dc_source.png",
         [],
         [],
-        [iconPort("port3", true, true, "TriangleRight", "blue")],
+        [iconPort("port1", true, false, "TriangleRight", "blue")],
         [])
 
       iconElement("om", "./icons/symbol_optical_modulator_measured.png",
@@ -159,13 +177,17 @@
         [],
         [],
         [],
-        [iconPort("port1", false, true, "TriangleDown", "green"), iconPort("port2", false, true, "Circle", "green")])
+        [iconPort("port1", false, false, "TriangleDown", "green"), iconPort("port2", false, false, "Circle", "green")])
 
       iconElement("y_m", "./icons/symbol_waveguide_y_branch_mirror.png",
         [iconPort("port1", true, true, "Rectangle", "green"), iconPort("port2", true, true, "Rectangle", "green")],
         [],
-        [iconPort("port3", true, true, "Rectangle", "green")],
+        [iconPort("port3", true, false, "Rectangle", "green")],
         [])
+
+
+
+
 
       myDiagram.linkTemplate =
         $(go.Link,
@@ -176,11 +198,20 @@
           $(go.Shape, { stroke: "gray", strokeWidth: 2 },
             new go.Binding("stroke", "color")
           ),
-          // $(go.Shape, { stroke: "gray", fill: "gray", toArrow: "Standard" })
         );
 
+      const nodeDataArray = [
+        // { key: "WGD_1", isGroup: true },
+        // { key: "wgd1", type: "wgd", group: "WGD_1" },
 
-      var nodeDataArray = [
+        // { key: "WGD_2", isGroup: true },
+        // { key: "wgd2", type: "wgd", group: "WGD_2" },
+
+        // { key: "Y_1", isGroup: true },
+        // {
+        //   key: "y_1", type: "y", group: "Y_1",
+
+        // },
         { key: "WGD_1", isGroup: true },
         { key: "WGD_1_1", type: "wgd", group: "WGD_1" },
 
@@ -212,9 +243,9 @@
         { key: "Y_M_1_1", type: "y_m", group: "Y_M_1" },
       ]
 
-      var linkDataArray = [
+      const linkDataArray = [
         { from: "Y_1_1", to: "WGD_1_1", frompid: "port2", topid: "port1", color: "green" },
-        { from: "Y_1_1", to: "WGD_2_1", frompid: "port3", topid: "port2", color: "green" },
+        { from: "Y_1_1", to: "WGD_2_1", frompid: "port3", topid: "port1", color: "green" },
         { from: "WGD_1_1", to: "WGD_3_1", frompid: "port2", topid: "port1", color: "green" },
         { from: "WGD_3_1", to: "OM_1_1", frompid: "port2", topid: "port1", color: "green" },
         { from: "WGD_2_1", to: "OM_2_1", frompid: "port2", topid: "port1", color: "green" },
@@ -234,27 +265,20 @@
         nodeDataArray: nodeDataArray,
         linkDataArray: linkDataArray
       }
-
       myDiagram.model = go.Model.fromJson(setElement);
+
+
     }
+
+
   </script>
+
+
+
 </head>
 
-
 <body onload="init()">
-  <script src="./go.js"></script>
-  <div id="allSampleContent" class="p-4 w-full">
-    <div id="sample">
-      <div id="myDiagramDiv"
-        style="border: 1px solid black; width: 100%; height: 800px; position: relative; -webkit-tap-highlight-color: rgba(255, 255, 255, 0);">
-        <canvas tabindex="0" width="1037" height="598"
-          style="position: absolute; top: 0px; left: 0px; z-index: 2; user-select: none; touch-action: none; width: 1037px; height: 598px;">
-        </canvas>
-      </div>
-      <div>
-      </div>
-    </div>
-  </div>
+  <div id="myDiagramDiv" style="width:800px; height:600px; border:1px solid black;"></div>
 </body>
 
 </html>
